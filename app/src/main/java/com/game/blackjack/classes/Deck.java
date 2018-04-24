@@ -1,29 +1,28 @@
 package com.game.blackjack.classes;
 
+import android.content.Context;
 import com.game.blackjack.factory_method.classes.Card;
 import com.game.blackjack.factory_method.factory.CardFactory;
 import com.game.blackjack.factory_method.interfaces.Creator;
+import com.game.blackjack.utilities.Constant;
 import java.util.ArrayList;
 
 public class Deck {
 
-
     // region Attributes of Class
-
     private static Deck instance; // atributo para la instancia de la clase
-    private ArrayList<Card> cartas;
-
+    private ArrayList<Card> listCards;
+    private boolean cardsPoker;
+    private int numberCards;
+    private Context context;
     // endregion
 
 
-
     // region Constructors
-
     /**
      * Constructor privado para evitar instancias de la clase
      */
     private Deck() {}
-
 
     /**
      * Metodo static que retorna una instancia de la clase
@@ -35,53 +34,54 @@ public class Deck {
         }
         return instance;
     }
-
     // endregion
-
 
 
     /**
      * Metodo para crear las cartas
      */
-    public void createCarta() {
-
+    public void createCards() {
         Creator cards = new CardFactory();
-        cartas = cards.createCard(48);
+        numberCards = Constant.NUMBER_CARDS_SPANISH;
 
+        if (cardsPoker) numberCards = Constant.NUMBER_CARDS_POKER;
+
+        listCards = cards.createCards(numberCards, context);
     }
-
 
     /**
      * Metodo para obtener una nueva carta
      */
-    public Card obtenerNuevaCarta() {
-        Card newCarta = null;
-        boolean disponible = false;
+    public Card getNewCard() {
+        Card newCard = null;
+        boolean available = false;
 
-        while (!disponible){
-            int pos = (int) (Math.random() * 48);
+        while (!available){
 
-            if (this.cartas.get(pos).isEstado() == false){
-                newCarta = this.cartas.get(pos);
-                newCarta.setEstado(true);
-                disponible = true;
+            int pos = (int) (Math.random() * numberCards);
+
+            if (this.listCards.get(pos).isAvailable() == false){
+                newCard = this.listCards.get(pos);
+                newCard.setAvailable(true);
+                available = true;
             }
         }
-
-        return newCarta;
+        return newCard;
     }
-
 
 
     // region Getters and Setters
+    public ArrayList<Card> getListCards() { return listCards; }
 
-    public ArrayList<Card> getCartas() {
-        return cartas;
-    }
+    public void setListCards(ArrayList<Card> listCards) { this.listCards = listCards; }
 
-    public void setCartas(ArrayList<Card> cartas) {
-        this.cartas = cartas;
-    }
+    public boolean isCardsPoker() { return cardsPoker; }
 
+    public void setCardsPoker(boolean cardsPoker) { this.cardsPoker = cardsPoker; }
+
+    public Context getContext() { return context; }
+
+    public void setContext(Context context) { this.context = context; }
     // endregion
+
 }

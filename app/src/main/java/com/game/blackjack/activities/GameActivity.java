@@ -1,31 +1,38 @@
 package com.game.blackjack.activities;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.game.blackjack.R;
-import com.game.blackjack.classes.Carta;
+import com.game.blackjack.classes.DialogConfig;
 import com.game.blackjack.classes.Hand;
+import com.game.blackjack.classes.Player;
 import com.game.blackjack.factory_method.classes.Card;
+import com.game.blackjack.observer_pattern.Observer;
 import com.game.blackjack.utilities.Constant;
+
 import java.util.ArrayList;
 
-public class GameActivity extends AppCompatActivity {
-
+public class GameActivity extends AppCompatActivity implements Observer {
 
     // region Attributes of Activity
-    LinearLayout llJugador1, llJugador2;
-    TextView tvPedir, tvPlantar, tvPuntos, tvGanador;
+    LinearLayout llPlayer1, llPlayer2;
+    TextView tvPedir, tvPlantar, tvPuntos, tvGanador, tvPlayer1, tvPlayer2, tvNewGame;
 
     private Hand hand;
-    private int turno;
-    private boolean continuar;
-    public static Context context;
+    private int turn;
+    private boolean play;
+    private boolean cardsPoker;
+    private ArrayList<Player> listPlayers;
+    private int pointsPlayer1, pointsPlayer2;
+    private final int WIDTH_CARD = 120;
     // endregion
 
 
@@ -33,191 +40,270 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        context = this;
 
-        llJugador1 = (LinearLayout) findViewById(R.id.ll_jugador_1);
-        llJugador2 = (LinearLayout) findViewById(R.id.ll_jugador_2);
+        cardsPoker = getIntent().getBooleanExtra("cardsPoker", false);
+        listPlayers = DialogConfig.listPlayers; // recupero la lista
+
+        tvPlayer1 = (TextView) findViewById(R.id.tv_player1);
+        llPlayer1 = (LinearLayout) findViewById(R.id.ll_jugador_1);
+        tvPlayer2 = (TextView) findViewById(R.id.tv_player2);
+        llPlayer2 = (LinearLayout) findViewById(R.id.ll_jugador_2);
+        tvNewGame = (TextView) findViewById(R.id.tv_new_game);
         tvPedir = (TextView) findViewById(R.id.tv_pedir);
         tvPlantar = (TextView) findViewById(R.id.tv_plantar);
         tvPuntos = (TextView) findViewById(R.id.tv_puntaje);
         tvGanador = (TextView) findViewById(R.id.tv_ganador);
 
-        // falta revisar mas cosas
-        iniciarJuego();
+        tvNewGame.setOnClickListener(this::eventClickNewGame);
+
+        startGame();
     }
 
 
     /**
      * Metodo encargado de iniciar el juego
      */
-    private void iniciarJuego(){
-        this.hand = new Hand();
-        this.hand.asignarCartaJugadorInicio();
-        mostrarCartas(this.hand.getCartasJugador1(), 0);
-        mostrarCartas(this.hand.getCartasJugador2(), 1);
-        mostrarPuntos(0);
-        this.turno = 0;
-        this.continuar = continuar();
+    private void startGame() {
+        this.hand = new Hand(cardsPoker, this);
+        createPlayers();
+        showNamePlayers();
+        this.hand.assignCardPlayerStart();
+        showCards(this.hand.getCardsPlayer1(), 0);
+        showCards(this.hand.getCardsPlayer2(), 1);
+        this.turn = 0;
+        showPoints(turn);
+        this.play = continueGame(); // revisar esta parte
 
-        if (this.continuar) {
-            tvPedir.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (continuar) {
-                        if (turno == 0) {
-                            continuarJuego();
-                        } else {
-                            continuarJuego();
-                        }
+        if (this.play) {
+            tvPedir.setOnClickListener(view -> {
+                if (play) {
+                    if (turn == 0) {
+                        continuePlaying();
                     } else {
-                        tvPedir.setEnabled(true);
+                        continuePlaying();
                     }
+                } else {
+                    tvPedir.setEnabled(false);
                 }
             });
 
-            tvPlantar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // analizar si el jugador 2 se planta o si hay un empate
-                    if (turno == 1){
-                        // revisar puntos o posible empate
-                        revisarPuntajes();
-                    } else {
-                        turno = 1;
-                        continuar = true;
-                        mostrarPuntos(turno);
-                    }
+            tvPlantar.setOnClickListener(view -> {
+                // analizar si el jugador 2 se planta o si hay un empate
+                if (turn == 1) {
+                    // revisar puntos o posible empate
+                    checkScore();
+                } else {
+                    turn = 1;
+                    changePlayerTextView();
+                    play = true;
+                    showPoints(turn);
                 }
             });
-        }
-    }
-
-
-    public void revisarPuntajes(){
-        int puntosJugador1 = this.hand.puntosMano(0);
-        int puntosJugador2 = this.hand.puntosMano(1);
-
-        if (puntosJugador1 == puntosJugador2){
-            tvGanador.setText("Hay un EMPATE");
-        } else if (puntosJugador1 > puntosJugador2) {
-            tvGanador.setText("El Ganador es:  " + this.hand.getJugadores().get(0).getNombre().toUpperCase());
         } else {
-            tvGanador.setText("El Ganador es:  " + this.hand.getJugadores().get(1).getNombre().toUpperCase());
+            tvNewGame.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * Metodo para crear los jugadores y asignar el observer
+     */
+    public void createPlayers() {
+        if (listPlayers == null || listPlayers.isEmpty()) {
+            Player player1 = new Player(1, "Player One");
+            this.hand.getListPlayers().add(player1);
+            player1.addObserver(this);
+
+            Player player2 = new Player(2, "Player Two");
+            this.hand.getListPlayers().add(player2);
+            player2.addObserver(this);
+        } else {
+
+            if (listPlayers.size() == 1) {
+                Player player1 = listPlayers.get(0);
+                player1.setId(1);
+                player1.addObserver(this);
+                this.hand.getListPlayers().add(player1);
+
+                Player player2 = new Player(2, "Player Two");
+                this.hand.getListPlayers().add(player2);
+                player2.addObserver(this);
+            } else {
+                int id = 1;
+                for (Player player : listPlayers) {
+                    this.hand.getListPlayers().add(player);
+                    player.setId(id);
+                    player.addObserver(this);
+                    id++;
+                }
+            }
+        }
+    }
 
     /**
      * Metodo que se encarga de continuar con el juego
      */
-    public void continuarJuego(){
+    public void continuePlaying() {
         // Pido la carta y la asigno al jugador correspondiente
-        this.hand.asignarCartaJugador(this.turno, this.hand.getDeck().obtenerNuevaCarta());
+        this.hand.assignCardPlayer(this.turn, this.hand.getDeck().getNewCard());
 
-        if (this.turno == 0){
-            mostrarCartas(this.hand.getCartasJugador1(), this.turno);
+        if (this.turn == 0) {
+            showCards(this.hand.getCardsPlayer1(), this.turn);
         } else {
-            mostrarCartas(this.hand.getCartasJugador2(), this.turno);
+            showCards(this.hand.getCardsPlayer2(), this.turn);
         }
-        mostrarPuntos(this.turno);
-        this.continuar = continuar();
+        showPoints(this.turn);
+        this.play = continueGame();
+
+        if (!play) {
+            tvNewGame.setVisibility(View.VISIBLE);
+        }
     }
 
 
+    // region Management Views
+
+    /**
+     * Metodo que permite mostrar las cartas en la vista
+     *
+     * @param cards
+     * @param player
+     */
+    private void showCards(ArrayList<Card> cards, int player) {
+
+        int width = getPixelsViewFromdp(WIDTH_CARD);
+
+        if (player == 0) {
+            llPlayer1.removeAllViews();
+        } else {
+            llPlayer2.removeAllViews();
+        }
+
+        for (Card card : cards) {
+            LinearLayout llCardView = new LinearLayout(this);
+            llCardView.setLayoutParams(new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT));
+            llCardView.setBackgroundResource(card.getImage());
+
+            View space = new View(getApplicationContext()); // vista para generar un espacio entre cartas
+            space.setLayoutParams(new LinearLayout.LayoutParams(30, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            if (player == 0) {
+                llPlayer1.addView(llCardView);
+                llPlayer1.addView(space);
+            } else {
+                llPlayer2.addView(llCardView);
+                llPlayer2.addView(space);
+            }
+        }
+    }
+
+    /**
+     * Metodo que permite mostrar el puntaje para el jugador actual
+     *
+     * @param player
+     */
+    private void showPoints(int player) {
+        if (player == 0) {
+            tvPuntos.setText("Puntos:\n " + pointsPlayer1);
+        } else {
+            tvPuntos.setText("Puntos:\n " + pointsPlayer2);
+        }
+    }
+
+    /**
+     * Metodo para verificar el puntaje de los jugadores
+     */
+    public void checkScore() {
+        if (pointsPlayer1 == pointsPlayer2) {
+            setPlayerWinner(this.hand.getListPlayers().get(0).getName().toUpperCase());
+            setPlayerWinner("Hay un EMPATE");
+        } else if (pointsPlayer1 > pointsPlayer2) {
+            setPlayerWinner(this.hand.getListPlayers().get(0).getName().toUpperCase());
+            setPlayerWinner("El Ganador es:  " + this.hand.getListPlayers().get(0).getName().toUpperCase());
+        } else {
+            setPlayerWinner(this.hand.getListPlayers().get(0).getName().toUpperCase());
+            setPlayerWinner("El Ganador es:  " + this.hand.getListPlayers().get(1).getName().toUpperCase());
+        }
+        tvNewGame.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Metodo para mostrar los nombres de los jugadores
+     */
+    public void showNamePlayers() {
+        tvPlayer1.setText(this.hand.getListPlayers().get(0).getName());
+        tvPlayer1.setTextColor(getResources().getColor(R.color.green));
+        tvPlayer1.setTextSize(18);
+
+        tvPlayer2.setText(this.hand.getListPlayers().get(1).getName());
+        tvPlayer2.setTextColor(Color.BLACK);
+        tvPlayer2.setTextSize(14);
+    }
+
+    /**
+     * Metodo para cambiar el estilo del nombre del jugador actual
+     */
+    public void changePlayerTextView() {
+        if (turn == 0) {
+            tvPlayer1.setTextColor(getResources().getColor(R.color.green));
+            tvPlayer1.setTextSize(18);
+            tvPlayer2.setTextColor(Color.BLACK);
+            tvPlayer2.setTextSize(14);
+        } else {
+            tvPlayer2.setTextColor(getResources().getColor(R.color.green));
+            tvPlayer2.setTextSize(18);
+            tvPlayer1.setTextColor(Color.BLACK);
+            tvPlayer1.setTextSize(14);
+        }
+    }
+
     /**
      * Metodo que me permite saber si puedo continuar en el juego o no
+     *
      * @return
      */
-    public boolean continuar(){
-        boolean continuarJugador1 = this.hand.continuar(this.hand.puntosMano(0));
-        boolean continuarJugador2 = this.hand.continuar(this.hand.puntosMano(1));
+    public boolean continueGame() {
+        boolean continuePlayer1 = this.hand.continuePlaying(pointsPlayer1);
+        boolean continuePlayer2 = this.hand.continuePlaying(pointsPlayer2);
 
-        if (!continuarJugador1 && !continuarJugador2){
+        if (!continuePlayer1 && !continuePlayer2) {
             return true;
-        } else if (continuarJugador1){
+        } else if (continuePlayer1) {
 
-            int puntosJugador1 = this.hand.puntosMano(0);
-
-            if (puntosJugador1 == Constant.SCORE_WINNER){
-                tvGanador.setText("El Ganador es:  " + this.hand.getJugadores().get(0).getNombre().toUpperCase());
+            if (pointsPlayer1 == Constant.SCORE_WINNER) {
+                setPlayerWinner("El Ganador es:  " + this.hand.getListPlayers().get(0).getName().toUpperCase());
             } else {
-                tvGanador.setText("El Ganador es:  " + this.hand.getJugadores().get(1).getNombre().toUpperCase());
+                setPlayerWinner("El Ganador es:  " + this.hand.getListPlayers().get(1).getName().toUpperCase());
             }
 
-        } else if(continuarJugador2){
+        } else if (continuePlayer2) {
 
-            int puntosJugador2 = this.hand.puntosMano(1);
-
-            if (puntosJugador2 == Constant.SCORE_WINNER){
-                tvGanador.setText("El Ganador es:  " + this.hand.getJugadores().get(1).getNombre().toUpperCase());
+            if (pointsPlayer2 == Constant.SCORE_WINNER) {
+                setPlayerWinner("El Ganador es:  " + this.hand.getListPlayers().get(1).getName().toUpperCase());
             } else {
-                tvGanador.setText("El Ganador es:  " + this.hand.getJugadores().get(0).getNombre().toUpperCase());
+                setPlayerWinner("El Ganador es:  " + this.hand.getListPlayers().get(0).getName().toUpperCase());
             }
 
         }
         return false;
     }
 
-
     /**
-     * Metodo que permite mostrar las cartas en la vista
-     * @param cartas
-     * @param player
+     * Metodo para setear el nombre del ganador
+     *
+     * @param winner
      */
-    private void mostrarCartas(ArrayList<Card> cartas, int player){
-        int width = getPixelsViewFromdp(120);
-        int heigth = getPixelsViewFromdp(100);
-
-        if (player == 0){
-            llJugador1.removeAllViews();
-        } else {
-            llJugador2.removeAllViews();
-        }
-
-        for (Card carta: cartas){
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            LinearLayout viewCarta = (LinearLayout) inflater.inflate(R.layout.layout_card, null);
-
-            TextView tvNumber = (TextView) viewCarta.findViewById(R.id.tv_numero_carta);
-            TextView tvTipo = (TextView) viewCarta.findViewById(R.id.tv_tipo_Carta);
-
-            // asigno valores
-            tvNumber.setText("");
-            //tvNumber.setText(""+carta.getNumber());
-            //tvTipo.setText(carta.getTipo());
-            tvTipo.setText("");
-            //viewCarta.setLayoutParams(new LinearLayout.LayoutParams(width, heigth));
-            viewCarta.setLayoutParams(new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT));
-            viewCarta.setBackgroundResource(carta.getImagen());
-
-            View espacio = new View(getApplicationContext()); // vista para generar un espacio entre cartas
-            espacio.setLayoutParams(new LinearLayout.LayoutParams(30, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            if (player == 0){
-                //viewCarta.setBackgroundColor(getResources().getColor(R.color.gray));
-                llJugador1.addView(viewCarta);
-                llJugador1.addView(espacio);
-            } else {
-                //viewCarta.setBackgroundColor(getResources().getColor(R.color.yellow));
-                llJugador2.addView(viewCarta);
-                llJugador2.addView(espacio);
-            }
-        }
+    public void setPlayerWinner(String winner) {
+        tvGanador.setVisibility(View.VISIBLE);
+        tvGanador.setText(winner);
+        tvPedir.setEnabled(false);
+        tvPlantar.setEnabled(false);
     }
-
-
-
-    /**
-     * Metodo que permite mostrar el puntaje para el jugador actual
-     * @param player
-     */
-    private void mostrarPuntos(int player){
-        tvPuntos.setText("Puntos:\n " + this.hand.puntosMano(player));
-    }
+    // endregion
 
 
     /**
      * Metodo que me retorna un valor en pixeles dependiendo la resolucion del dispositivo
+     *
      * @param dp
      * @return
      */
@@ -227,4 +313,54 @@ public class GameActivity extends AppCompatActivity {
     }
 
 
+    // region Events
+
+    /**
+     * evento click para iniciar nuevamente el juego
+     *
+     * @param view
+     */
+    public void eventClickNewGame(View view) {
+        resetPlayers();
+        startGame();
+        tvPedir.setEnabled(true);
+        tvPlantar.setEnabled(true);
+        view.setVisibility(View.GONE);
+        tvGanador.setVisibility(View.GONE);
+    }
+
+    public void resetPlayers() {
+        if (listPlayers != null) {
+            for (Player player : listPlayers) {
+                player.setPoints(-player.getPoints()); // le resto los puntos
+                player.deleteObserver(this); // elimino el objserver
+            }
+        }
+        pointsPlayer1 = 0;
+        pointsPlayer2 = 0;
+    }
+
+    @Override
+    public void update(Player player) {
+        //Log.i(getClass().getName(), "detalles id: "+player.getId()+" name: "+player.getName()+" points: "+player.getPoints());
+        if (player.getId() == 1) {
+            pointsPlayer1 = player.getPoints();
+        } else {
+            pointsPlayer2 = player.getPoints();
+        }
+    }
+    // endregion
+
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+        resetPlayers();
+        tvPedir.setEnabled(true);
+        tvPlantar.setEnabled(true);
+        tvNewGame.setVisibility(View.GONE);
+        tvGanador.setVisibility(View.GONE);
+        finish();
+    }
 }

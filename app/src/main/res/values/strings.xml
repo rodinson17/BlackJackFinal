@@ -1,6 +1,24 @@
 <resources>
     <string name="app_name">BlackJack</string>
 
+    <!-- Main Activity -->
+    <string name="config">Config</string>
+
+    <!-- Dialog Config -->
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="select_type_cards">Select type cards</string>
+    <string name="cards_spanish">Card Spanish</string>
+    <string name="cards_poker">Card Poker</string>
+    <string name="create_players">Create Players</string>
+    <string name="name_player">Name Player:</string>
+    <string name="name">Name</string>
+    <string name="crear">Crear</string>
+
+    <!-- Game Activity -->
     <string name="pedir">PEDIR</string>
     <string name="plantar">PLANTAR</string>
+    <string name="title_activity_login">Sign in</string>
+
+
 </resources>

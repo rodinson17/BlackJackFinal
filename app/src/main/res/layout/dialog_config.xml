@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/generic_border_radius"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="20dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_titles"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/cancel"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="@dimen/text_mayus"
+            android:textColor="@color/dark_black"
+            android:text="@string/config"/>
+
+        <TextView
+            android:id="@+id/tv_save"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingRight="20dp"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_titles"
+            android:textColor="@color/colorPrimaryDark"
+            android:gravity="center_vertical|right"
+            android:text="@string/save"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/gray"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:text="@string/select_type_cards"
+                android:textColor="@color/dark_black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+
+            <RadioGroup
+                android:id="@+id/rg_types_cards"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/border_top_button_dialog"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rb_cards_spanish"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:text="@string/cards_spanish" />
+
+                <RadioButton
+                    android:id="@+id/rb_cards_poker"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:text="@string/cards_poker" />
+            </RadioGroup>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/gray"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:text="@string/create_players"
+                android:textStyle="bold"
+                android:textColor="@color/dark_black"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:gravity="center_horizontal"
+                android:background="@drawable/border_top_button_dialog">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/text_minus"
+                        android:textColor="@color/dark_black"
+                        android:gravity="center_horizontal"
+                        android:text="@string/name_player"/>
+
+                    <EditText
+                        android:id="@+id/et_name_player"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:hint="@string/name"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_msg_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:paddingTop="3dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/red"/>
+
+                <Button
+                    android:id="@+id/btn_create_player"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/crear"
+                    android:textAllCaps="false"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_content_list_players"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/gray"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_list_players"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

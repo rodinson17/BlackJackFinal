@@ -1,66 +1,50 @@
 package com.game.blackjack.factory_method.classes;
 
+import android.content.Context;
 
 public abstract class Card {
 
     // region Attributes of Class
-
     private int number;
-    private String tipo;
-    private boolean estado;
-    private int imagen;
-
+    private String type;
+    private boolean available;
+    private int image;
     // endregion
 
 
-    /*public Card(int number, String tipo) {
+    // region Constructors
+    public Card(int number, String type) {
         this.number = number;
-        this.tipo = tipo;
-    }*/
-
-    public Card(int number, String tipo, int imagen) {
-        this.number = number;
-        this.tipo = tipo;
-        this.imagen = imagen;
+        this.type = type;
     }
 
-    public abstract void createFigure();
+    /*public Card(int number, String type, int image) {
+        this.number = number;
+        this.type = type;
+        this.image = image;
+    }*/
+    // endregion
+
+
+    public abstract void createFigure(Context context);
 
 
     // region Getters and Setters
+    public int getNumber() { return number; }
 
-    public int getNumber() {
-        return number;
-    }
+    public void setNumber(int number) { this.number = number; }
 
-    public void setNumber(int number) {
-        this.number = number;
-    }
+    public String getType() { return type; }
 
-    public String getTipo() {
-        return tipo;
-    }
+    public void setType(String type) { this.type = type; }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
+    public boolean isAvailable() { return available; }
 
-    public boolean isEstado() {
-        return estado;
-    }
+    public void setAvailable(boolean available) { this.available = available; }
 
-    public void setEstado(boolean estado) {
-        this.estado = estado;
-    }
+    public int getImage() { return image; }
 
-    public int getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(int imagen) {
-        this.imagen = imagen;
-    }
-
+    public void setImage(int image) { this.image = image; }
     // endregion
 
 }

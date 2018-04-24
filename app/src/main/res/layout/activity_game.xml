@@ -19,7 +19,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="Player 1" />
+            android:padding="5dp"
+            android:textColor="@color/dark_black"
+            android:textStyle="bold|italic"
+            android:textSize="@dimen/text_mayus"/>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -42,7 +45,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="Player 2" />
+            android:padding="5dp"
+            android:textStyle="bold|italic"
+            android:textColor="@color/dark_black"
+            android:textSize="@dimen/text_mayus"/>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -62,10 +68,19 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_new_game"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:visibility="gone"
+        android:background="@drawable/new_game"/>
+
+    <TextView
         android:id="@+id/tv_ganador"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:paddingTop="10dp"
+        android:visibility="gone"
         android:textColor="@color/colorAccent"
         android:textSize="18sp" />
 
