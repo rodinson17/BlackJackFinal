@@ -69,4 +69,5 @@ public class Player implements Subject{
         notifyObservers();
     }
     // endregion
+
 }

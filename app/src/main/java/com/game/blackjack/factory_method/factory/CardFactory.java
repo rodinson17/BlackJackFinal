@@ -5,29 +5,22 @@ import com.game.blackjack.factory_method.classes.Card;
 import com.game.blackjack.factory_method.classes.CardPoker;
 import com.game.blackjack.factory_method.classes.CardSpanish;
 import com.game.blackjack.factory_method.interfaces.Creator;
-import com.game.blackjack.utilities.Constant;
 import java.util.ArrayList;
 
 public class CardFactory implements Creator {
 
-
     @Override
-    public ArrayList<Card> createCards(int number, Context context) {
+    public ArrayList<Card> createCards(boolean cardsPoker, Context context) {
         ArrayList<Card> listCards = new ArrayList<>();
 
-        if (number == Constant.NUMBER_CARDS_SPANISH) {
-            createCardSpanish(listCards, context);
-        } else {
+        if (cardsPoker) {
             createCardPoker(listCards, context);
+        } else {
+            createCardSpanish(listCards, context);
         }
         return listCards;
     }
 
-    /**
-     * Metodo para crear las cartas españolas
-     * @param listCards
-     * @param context
-     */
     public void createCardSpanish(ArrayList<Card> listCards, Context context){
         String[] types = {"bastos","oros","espadas","copas"};
 
@@ -40,11 +33,6 @@ public class CardFactory implements Creator {
         }
     }
 
-    /**
-     * Metodo para crear las cartas de poker
-     * @param listCards
-     * @param context
-     */
     public void createCardPoker(ArrayList<Card> listCards, Context context){
         String[] types = {"clubs","diamonds","hearts","spades"};
 

@@ -10,8 +10,10 @@ import com.game.blackjack.classes.DialogConfig;
 
 public class MainActivity extends AppCompatActivity implements DialogConfig.DialogEventListener{
 
+    // region Attributes of Activity
     private TextView tvJugar, tvConfig;
     private boolean cardsPoker;
+    // endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +33,9 @@ public class MainActivity extends AppCompatActivity implements DialogConfig.Dial
     }
 
 
+    // region Listener
     public void eventClickConfig(View v){
-        DialogConfig dialog = new DialogConfig(this);
-        dialog.init(this.cardsPoker);
+        DialogConfig dialog = new DialogConfig(this, cardsPoker);
         dialog.setListener(this);
         dialog.show();
     }
@@ -43,5 +45,6 @@ public class MainActivity extends AppCompatActivity implements DialogConfig.Dial
         this.cardsPoker = cardsPoker;
         dialog.dismiss();
     }
+    // region
 
 }

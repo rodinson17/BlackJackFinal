@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface Creator {
 
-    ArrayList<Card> createCards(int number, Context context);
+    ArrayList<Card> createCards(boolean cardsPoker, Context context);
 
 }

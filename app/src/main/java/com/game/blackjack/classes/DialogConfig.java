@@ -16,6 +16,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import com.game.blackjack.R;
+import com.game.blackjack.utilities.Constant;
+
 import java.util.ArrayList;
 
 public class DialogConfig extends Dialog {
@@ -43,24 +45,27 @@ public class DialogConfig extends Dialog {
 
 
     // region Constructors
-    public DialogConfig(@NonNull Context context) {
+    public DialogConfig(@NonNull Context context, boolean cardsPoker) {
         super(context);
+        this.cardsPoker = cardsPoker;
+        init();
     }
 
-    public DialogConfig(@NonNull Context context, int themeResId) {
+    private DialogConfig(@NonNull Context context, int themeResId) {
         super(context, themeResId);
     }
     // endregion
 
 
-    public void init(boolean cardsPoker){
+    public void init(){
         listPlayers = new ArrayList<>();
-        this.cardsPoker = cardsPoker;
 
+        // se configura la vista
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setContentView(R.layout.dialog_config);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
+        // se instancia los elementos
         tvCancel = (TextView) findViewById(R.id.tv_cancel);
         tvSave = (TextView) findViewById(R.id.tv_save);
         tvMsgError = (TextView) findViewById(R.id.tv_msg_error);
@@ -114,7 +119,7 @@ public class DialogConfig extends Dialog {
     }
 
 
-    // region Events Click
+    // region Listener
     private void eventCancel(View view) {
         listPlayers.clear();
         this.dismiss();
@@ -125,32 +130,30 @@ public class DialogConfig extends Dialog {
     }
 
     public void eventCreatePlayer(View view) {
-        if (etNamePlayer.getText().toString().equals("")){
+
+        if (etNamePlayer.getText().toString().equals(Constant.STRING_EMPTY)){
             tvMsgError.setVisibility(View.VISIBLE);
-            tvMsgError.setText("Ingrese el nombre del Jugador");
-        } else {
-            if (listPlayers.size() < 2) {
-                countPlayers++;
-                Player player = new Player(etNamePlayer.getText().toString());
-                listPlayers.add(player);
-
-                llContentListPlayers.setVisibility(View.VISIBLE);
-                TextView tv = new TextView(getContext());
-                tv.setText("Player " + countPlayers + ": "+etNamePlayer.getText().toString());
-                tv.setPadding(getPixelsViewFromdp(30), getPixelsViewFromdp(10), getPixelsViewFromdp(30), 0);
-                tv.setTextColor(Color.BLACK);
-                tv.setTextSize(14);
-                llListPlayers.addView(tv);
-                etNamePlayer.setText("");
-            } else {
-                tvMsgError.setVisibility(View.VISIBLE);
-                tvMsgError.setText("Solo se pueden crear 2 Jugadores");
-            }
+            tvMsgError.setText(getContext().getResources().getString(R.string.name_empty));
+            return;
         }
-    }
 
-    public void setListener(DialogEventListener listener) {
-        this.listener = listener;
+        if (listPlayers.size() < 2) {
+            countPlayers++;
+            Player player = new Player(etNamePlayer.getText().toString());
+            listPlayers.add(player);
+
+            llContentListPlayers.setVisibility(View.VISIBLE);
+            TextView tv = new TextView(getContext());
+            tv.setText("Player " + countPlayers + ": "+etNamePlayer.getText().toString());
+            tv.setPadding(getPixelsViewFromdp(30), getPixelsViewFromdp(10), getPixelsViewFromdp(30), 0);
+            tv.setTextColor(Color.BLACK);
+            tv.setTextSize(14);
+            llListPlayers.addView(tv);
+            etNamePlayer.setText(Constant.STRING_EMPTY);
+        } else {
+            tvMsgError.setVisibility(View.VISIBLE);
+            tvMsgError.setText(getContext().getResources().getString(R.string.max_player));
+        }
     }
     // endregion
 
@@ -159,5 +162,12 @@ public class DialogConfig extends Dialog {
         final float scale = getContext().getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
+
+
+    // region Getters and Setters
+    public void setListener(DialogEventListener listener) {
+        this.listener = listener;
+    }
+    // endregion
 
 }

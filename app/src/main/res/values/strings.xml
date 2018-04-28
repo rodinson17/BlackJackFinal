@@ -14,11 +14,17 @@
     <string name="name_player">Name Player:</string>
     <string name="name">Name</string>
     <string name="crear">Crear</string>
+    <string name="name_empty">Ingrese el nombre del Jugador</string>
+    <string name="max_player">Solo se pueden crear 2 Jugadores</string>
 
     <!-- Game Activity -->
     <string name="pedir">PEDIR</string>
     <string name="plantar">PLANTAR</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="player_one">Player One</string>
+    <string name="player_two">Player Two</string>
+    <string name="empate">Hay un EMPATE</string>
+    <string name="ganador">El Ganador es: </string>
 
 
 </resources>

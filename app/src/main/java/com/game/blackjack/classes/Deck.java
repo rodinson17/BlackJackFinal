@@ -28,7 +28,7 @@ public class Deck {
      * Metodo static que retorna una instancia de la clase
      * @return object Deck
      */
-    public static Deck getIntance() {
+    public static Deck getInstance() {
         if (instance == null) {
             instance = new Deck();
         }
@@ -42,11 +42,8 @@ public class Deck {
      */
     public void createCards() {
         Creator cards = new CardFactory();
-        numberCards = Constant.NUMBER_CARDS_SPANISH;
 
-        if (cardsPoker) numberCards = Constant.NUMBER_CARDS_POKER;
-
-        listCards = cards.createCards(numberCards, context);
+        listCards = cards.createCards(cardsPoker, context);
     }
 
     /**
@@ -77,7 +74,11 @@ public class Deck {
 
     public boolean isCardsPoker() { return cardsPoker; }
 
-    public void setCardsPoker(boolean cardsPoker) { this.cardsPoker = cardsPoker; }
+    public void setCardsPoker(boolean cardsPoker) {
+        this.cardsPoker = cardsPoker;
+        numberCards = Constant.NUMBER_CARDS_SPANISH;
+        if (cardsPoker) numberCards = Constant.NUMBER_CARDS_POKER;
+    }
 
     public Context getContext() { return context; }
 

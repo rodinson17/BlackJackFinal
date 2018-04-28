@@ -134,6 +134,7 @@
                         android:id="@+id/et_name_player"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:maxLines="1"
                         android:layout_weight="2"
                         android:hint="@string/name"/>
                 </LinearLayout>

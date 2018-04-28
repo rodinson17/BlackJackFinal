@@ -17,7 +17,7 @@ public class Hand {
 
     public Hand(boolean cardsPoker, Context context) {
         this.listPlayers = new ArrayList<>();
-        this.deck = Deck.getIntance();
+        this.deck = Deck.getInstance();
         this.deck.setContext(context);
         this.deck.setCardsPoker(cardsPoker);
         this.deck.createCards();
