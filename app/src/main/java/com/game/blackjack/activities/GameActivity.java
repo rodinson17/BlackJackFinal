@@ -367,7 +367,7 @@ public class GameActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Player player) {
-        //Log.i(getClass().getName(), "detalles id: "+player.getId()+" name: "+player.getName()+" points: "+player.getPoints());
+        Log.i(getClass().getName(), "detalles id: "+player.getId()+" name: "+player.getName()+" points: "+player.getPoints());
         if (player.getId() == 1) {
             pointsPlayer1 = player.getPoints();
         } else {
